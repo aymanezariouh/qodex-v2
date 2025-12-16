@@ -1,8 +1,14 @@
 <?php
 require_once 'C:\Users\LENOVO\Desktop\quiz-app\includes\database.php';
 require_once __DIR__ . '/../includes/functiones.php';
-$id = $_GET['id'];
 $categories = get_categories();
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header("Location: create_category.php");
+    exit;
+}
+
+$id = (int) $_GET['id'];
+$categ = get_id($id);
 $categ = get_id($id);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // echo '<pre>';
@@ -20,7 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new->execute();
     header("location : create_category.php");
 }
-
+if (isset($_POST['logoutBtn'])) {
+    $_SESSION = [];
+    session_destroy();
+    header("location : __DIR__.'../index.php' ");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,10 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span>Quiz App</span>
             </h1>
         </div>
+        <form action="edit.php" method="post">
         <button class="logout-btn" type="submit">
             <i class="fas fa-sign-out-alt"></i>
             <span>Logout</span>
         </button>
+        </form>
     </header>
 
     <!-- Sidebar -->

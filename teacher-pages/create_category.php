@@ -2,7 +2,18 @@
 require_once 'C:\Users\LENOVO\Desktop\quiz-app\includes\database.php';
 require_once __DIR__ . '/../includes/functiones.php';
 $categories = get_categories();
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header("Location: ../index.php");
+    exit;
+}
+
+$id = (int) $_GET['id'];
+$categ = get_id($id);
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -26,10 +37,13 @@ $categories = get_categories();
                 <span>Quiz App</span>
             </h1>
         </div>
-        <button class="logout-btn" onclick="handleLogout()">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
+        <form method="POST" action="../logout.php">
+            <button class="logout-btn" type="submit">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </form>
+
     </header>
 
     <!-- Sidebar -->
