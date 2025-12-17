@@ -1,19 +1,30 @@
 <?php
+session_start();
+
 require_once 'C:\Users\LENOVO\Desktop\quiz-app\includes\database.php';
 require_once __DIR__ . '/../includes/functiones.php';
-$categories = get_categories();
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: ../index.php");
+
+/* create category */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = $_POST['Nom_categorie'];
+    $description = $_POST['description'];
+
+    $stmt = $DB->prepare(
+        "INSERT INTO categories (Nom_categorie, description)
+        VALUES (?, ?)"
+    );
+    $stmt->bind_param("ss", $nom, $description);
+    $stmt->execute();
+
+    header("Location: create_category.php");
     exit;
 }
 
-$id = (int) $_GET['id'];
-$categ = get_id($id);
+/* fetch categories (if you list them) */
+$categories = get_categories();
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -25,7 +36,7 @@ $categ = get_id($id);
     <link rel="stylesheet" href="../css/categories.css">
 </head>
 
-<body>
+<body> 
     <!-- Header -->
     <header class="header">
         <div class="header-left">
@@ -37,13 +48,10 @@ $categ = get_id($id);
                 <span>Quiz App</span>
             </h1>
         </div>
-        <form method="POST" action="../logout.php">
-            <button class="logout-btn" type="submit">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </button>
-        </form>
-
+        <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
     </header>
 
     <!-- Sidebar -->
@@ -89,10 +97,11 @@ $categ = get_id($id);
                 <h2>Gestion des Catégories</h2>
                 <p>Organisez vos quiz par catégories</p>
             </div>
+            <a href="CREATION-cat.php">
             <button class="new-category-btn">
                 <i class="fas fa-plus"></i>
                 Nouvelle Catégorie
-            </button>
+            </button></a>
         </div>
 
         <div class="categories-container">

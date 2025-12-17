@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,7 @@
     </header>
     
 
-    <!-- Sidebar --><aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar">
         <nav>
             <ul class="nav-links">
                 <li>
@@ -40,7 +41,7 @@
                 </li>
                 <li>
                     <a href="create_quiz.php">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="fas fa-plus-circle"></i>  
                         <span>Create Quiz</span>
                     </a>
                 </li>
