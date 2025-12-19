@@ -81,45 +81,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $validQuestions = 0;
 
-for ($i = 0; $i < count($questions); $i++) {
+            for ($i = 0; $i < count($questions); $i++) {
 
-    $qText = trim($questions[$i] ?? '');
-    $aText = trim($answers[$i] ?? '');
+                $qText = trim($questions[$i] ?? '');
+                $aText = trim($answers[$i] ?? '');
 
-    if ($qText === '' || $aText === '') {
-        continue;
-    }
+                if ($qText === '' || $aText === '') {
+                    continue;
+                }
 
-    $validQuestions++;
+                $validQuestions++;
 
-    // REQUIRED defaults (because DB says NOT NULL)
-    $points = 1;
-    $option1 = null;
-    $option2 = null;
-    $option3 = null;
-    $option4 = null;
+                // REQUIRED defaults (because DB says NOT NULL)
+                $points = 1;
+                $option1 = null;
+                $option2 = null;
+                $option3 = null;
+                $option4 = null;
 
-    $stmtQ = $DB->prepare(
-        "INSERT INTO questions
+                $stmtQ = $DB->prepare(
+                    "INSERT INTO questions
         (text_question, reponse_correct, points, id_quiz, option1, option2, option3, option4)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    );
+                );
 
-    $stmtQ->bind_param(
-        "ssiiisss",
-        $qText,
-        $aText,
-        $points,
-        $quiz_id,
-        $option1,
-        $option2,
-        $option3,
-        $option4
-    );
+                $stmtQ->bind_param(
+                    "ssiiisss",
+                    $qText,
+                    $aText,
+                    $points,
+                    $quiz_id,
+                    $option1,
+                    $option2,
+                    $option3,
+                    $option4
+                );
 
-    $stmtQ->execute();
-}
-
+                $stmtQ->execute();
+            }
         }
 
         if ($validQuestions === 0) {
@@ -169,7 +168,7 @@ for ($i = 0; $i < count($questions); $i++) {
         <nav>
             <ul class="nav-links">
                 <li>
-                    <a href="./Dashboard.php" class="active">
+                    <a href="./Dashboard.php">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
@@ -180,9 +179,8 @@ for ($i = 0; $i < count($questions); $i++) {
                         <span>Create Category</span>
                     </a>
                 </li>
-
                 <li>
-                    <a href="quizes.php">
+                    <a href="quizzes.php" class="active">
                         <i class="fas fa-edit"></i>
                         <span>Manage Quizzes</span>
                     </a>
@@ -196,6 +194,7 @@ for ($i = 0; $i < count($questions); $i++) {
             </ul>
         </nav>
     </aside>
+
     <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 

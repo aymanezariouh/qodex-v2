@@ -3,7 +3,6 @@ session_start();
 require_once __DIR__ . '/../includes/database.php';
 require_once __DIR__ . '/../includes/functiones.php';
 
-// DELETE category
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
     $category_id = (int) $_POST['delete_id'];
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-// CREATE category
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Nom_categorie'], $_POST['description'])) {
 
     $nom = trim($_POST['Nom_categorie']);
@@ -33,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Nom_categorie'], $_PO
     exit;
 }
 
-// FETCH categories
 $categories = get_categories();
 ?>
 
@@ -49,7 +46,6 @@ $categories = get_categories();
 </head>
 
 <body> 
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="menu-toggle" id="menuToggle">
@@ -66,12 +62,11 @@ $categories = get_categories();
         </button>
     </header>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <nav>
             <ul class="nav-links">
                 <li>
-                    <a href="./Dashboard.php">
+                    <a href="./Dashboard.php" >
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
@@ -82,13 +77,13 @@ $categories = get_categories();
                         <span>Create Category</span>
                     </a>
                 </li>
+                
                 <li>
-                    <a href="create_quiz.php">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Create Quiz</span>
-                    </a>
+                <a href="quizes.php" >
+                    <i class="fas fa-edit"></i>
+                    <span>Manage Quizzes</span>
+                </a>
                 </li>
-
                 <li>
                     <a href="results.php">
                         <i class="fas fa-chart-bar"></i>
@@ -98,12 +93,9 @@ $categories = get_categories();
             </ul>
         </nav>
     </aside>
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
                 <h2>Gestion des Catégories</h2>

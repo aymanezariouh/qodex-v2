@@ -39,13 +39,13 @@
                         <span>Create Category</span>
                     </a>
                 </li>
-                <li>
-                    <a href="create_quiz.php">
-                        <i class="fas fa-plus-circle"></i>  
-                        <span>Create Quiz</span>
-                    </a>
-                </li>
                 
+                <li>
+                <a href="quizes.php" >
+                    <i class="fas fa-edit"></i>
+                    <span>Manage Quizzes</span>
+                </a>
+                </li>
                 <li>
                     <a href="results.php">
                         <i class="fas fa-chart-bar"></i>
@@ -76,7 +76,7 @@
                     <i class="fas fa-plus-circle"></i>
                     <span>New Quiz</span>
                 </a>
-                <a href="edit_quiz.php" class="action-card">
+                <a href="quizes.php" class="action-card">
                     <i class="fas fa-edit"></i>
                     <span>Manage Quizzes</span>
                 </a>
