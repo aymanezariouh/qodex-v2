@@ -6,7 +6,12 @@ if (!isset($_SESSION['teacher_id'])) {
     header("Location: ../index.php");
     exit;
 }
-// Load categories for this teacher (for dropdown)
+
+$error = null;
+
+/* =========================
+   LOAD CATEGORIES (GET)
+========================= */
 $stmt = $DB->prepare(
     "SELECT id_categories, Nom_categorie
      FROM categories
@@ -16,68 +21,118 @@ $stmt->bind_param("i", $_SESSION['teacher_id']);
 $stmt->execute();
 $categories = $stmt->get_result();
 
+/* =========================
+   HANDLE FORM SUBMIT (POST)
+========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $titre        = trim($_POST['quizTitle']);
+    $titre        = trim($_POST['quizTitle'] ?? '');
     $description  = trim($_POST['quizDescription'] ?? '');
-    $category_id  = (int) $_POST['quizCategory'];
+    $category_id  = (int) ($_POST['quizCategory'] ?? 0);
     $teacher_id   = (int) $_SESSION['teacher_id'];
-    $questions    = $_POST['question'];
-    $answers      = $_POST['answer'];
+    $questions    = $_POST['question'] ?? [];
+    $answers      = $_POST['answer'] ?? [];
 
-    // 🛑 BUG #3 FIX — VERIFY CATEGORY OWNERSHIP
-    $checkCat = $DB->prepare(
-        "SELECT id_categories 
-         FROM categories 
-         WHERE id_categories = ? AND teacher_id = ?"
-    );
-    $checkCat->bind_param("ii", $category_id, $teacher_id);
-    $checkCat->execute();
-    $resultCat = $checkCat->get_result();
-
-    if ($resultCat->num_rows === 0) {
-        die('Invalid category.');
+    /* ---- BASIC VALIDATION ---- */
+    if ($titre === '' || $category_id === 0) {
+        $error = "Titre et catégorie obligatoires.";
     }
 
-    // 1️⃣ Insert quiz
-    $stmt = $DB->prepare(
-        "INSERT INTO quiz (titre, description, id_categories, teacher_id)
-         VALUES (?, ?, ?, ?)"
+    /* ---- CATEGORY OWNERSHIP ---- */
+    if (!$error) {
+        $checkCat = $DB->prepare(
+            "SELECT id_categories
+             FROM categories
+             WHERE id_categories = ? AND teacher_id = ?"
+        );
+        $checkCat->bind_param("ii", $category_id, $teacher_id);
+        $checkCat->execute();
+
+        if ($checkCat->get_result()->num_rows === 0) {
+            $error = "Catégorie invalide.";
+        }
+    }
+
+    /* ---- INSERT QUIZ ---- */
+    if (!$error) {
+        // 1️⃣ Insert quiz (MATCHES YOUR DB STRUCTURE)
+        $stmt = $DB->prepare(
+            "INSERT INTO quiz (titre_quiz, description, id_categories, id_enseignant)
+     VALUES (?, ?, ?, ?)"
+        );
+        $stmt->bind_param("ssii", $titre, $description, $category_id, $teacher_id);
+        $stmt->execute();
+
+        $quiz_id = $DB->insert_id;
+
+
+        $validQuestions = 0;
+
+        for ($i = 0; $i < count($questions); $i++) {
+
+            $qText = trim($questions[$i] ?? '');
+            $aText = trim($answers[$i] ?? '');
+
+            if ($qText === '' || $aText === '') {
+                continue;
+            }
+
+            $validQuestions++;
+
+            $validQuestions = 0;
+
+for ($i = 0; $i < count($questions); $i++) {
+
+    $qText = trim($questions[$i] ?? '');
+    $aText = trim($answers[$i] ?? '');
+
+    if ($qText === '' || $aText === '') {
+        continue;
+    }
+
+    $validQuestions++;
+
+    // REQUIRED defaults (because DB says NOT NULL)
+    $points = 1;
+    $option1 = null;
+    $option2 = null;
+    $option3 = null;
+    $option4 = null;
+
+    $stmtQ = $DB->prepare(
+        "INSERT INTO questions
+        (text_question, reponse_correct, points, id_quiz, option1, option2, option3, option4)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     );
-    $stmt->bind_param("ssii", $titre, $description, $category_id, $teacher_id);
-    $stmt->execute();
 
-    $quiz_id = $DB->insert_id;
+    $stmtQ->bind_param(
+        "ssiiisss",
+        $qText,
+        $aText,
+        $points,
+        $quiz_id,
+        $option1,
+        $option2,
+        $option3,
+        $option4
+    );
 
-    // 2️⃣ Insert questions + answers
-    for ($i = 0; $i < count($questions); $i++) {
+    $stmtQ->execute();
+}
 
-        $qText = trim($questions[$i]);
-        $aText = trim($answers[$i]);
-
-        if ($qText === '' || $aText === '') {
-            continue;
         }
 
-        $stmtQ = $DB->prepare(
-            "INSERT INTO questions (question_text, id_quiz)
-             VALUES (?, ?)"
-        );
-        $stmtQ->bind_param("si", $qText, $quiz_id);
-        $stmtQ->execute();
-
-        $question_id = $DB->insert_id;
-
-        $stmtA = $DB->prepare(
-            "INSERT INTO answers (answer_text, is_correct, id_question)
-             VALUES (?, 1, ?)"
-        );
-        $stmtA->bind_param("si", $aText, $question_id);
-        $stmtA->execute();
+        if ($validQuestions === 0) {
+            $DB->query("DELETE FROM quiz WHERE id_quiz = $quiz_id");
+            $error = "Ajoutez au moins une question valide.";
+        }
     }
 
-    header("Location: edit_quiz.php?id=$quiz_id");
-    exit;
+    /* ---- SUCCESS ---- */
+    if (!$error) {
+        header("Location: quizes.php");
+        exit;
+    }
 }
 
 ?>
@@ -114,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav>
             <ul class="nav-links">
                 <li>
-                    <a href="./Dashboard.php">
+                    <a href="./Dashboard.php" class="active">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
@@ -125,13 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span>Create Category</span>
                     </a>
                 </li>
+
                 <li>
-                    <a href="create_quiz.php" class="active">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Create Quiz</span>
+                    <a href="quizes.php">
+                        <i class="fas fa-edit"></i>
+                        <span>Manage Quizzes</span>
                     </a>
                 </li>
-
                 <li>
                     <a href="results.php">
                         <i class="fas fa-chart-bar"></i>
@@ -152,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>Créer un Quiz</h2>
                 <p>Ajoutez un nouveau quiz et ses questions</p>
             </div>
-            <a href="edit_quiz.php" class="back-btn">
+            <a href="quizes.php" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Retour aux quiz
             </a>
