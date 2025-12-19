@@ -10,9 +10,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int) $_GET['id'];
 $categ = get_id($id);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // echo '<pre>';
-    // print_r($_POST);
-    // echo '</pre>';
     $id = $_POST['id'];
     $nom = $_POST['Nom_categorie'];
     $description = $_POST['description'];
@@ -62,7 +59,6 @@ if (isset($_POST['logoutBtn'])) {
         </form>
     </header>
 
-    <!-- Sidebar -->
     
     <aside class="sidebar" id="sidebar">
         <nav>
@@ -95,12 +91,9 @@ if (isset($_POST['logoutBtn'])) {
             </ul>
         </nav>
     </aside>
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
                 <h2>Modifier la Catégorie</h2>
@@ -112,17 +105,13 @@ if (isset($_POST['logoutBtn'])) {
             </a>
         </div>
 
-        <!-- Form Container -->
         <div class="form-container">
-            <!-- Info Alert -->
             <div class="info-alert">
                 <i class="fas fa-info-circle"></i>
                 <p>Modifiez les informations de votre catégorie. Les modifications seront appliquées à tous les quiz associés.</p>
             </div>
 
-            <!-- Edit Form -->
             <form id="editCategoryForm" method="POST">
-                <!-- Category Name -->
                 <div class="form-group">
                     <label for="categoryName">
                         Nom de la catégorie <span style="color: #dc3545;">*</span>
@@ -139,7 +128,6 @@ if (isset($_POST['logoutBtn'])) {
                     <small>Le nom doit être unique et descriptif</small>
                 </div>
 
-                <!-- Category Description -->
                 <div class="form-group">
                     <label for="categoryDescription">
                         Description
@@ -152,7 +140,6 @@ if (isset($_POST['logoutBtn'])) {
                     <small>Une description claire aide les étudiants à comprendre le contenu</small>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i>

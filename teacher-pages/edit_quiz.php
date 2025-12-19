@@ -15,7 +15,6 @@ if ($quiz_id <= 0) {
     exit;
 }
 
-/* 🔒 Load quiz + ownership check */
 $stmt = $DB->prepare(
     "SELECT * FROM quiz 
      WHERE id_quiz = ? AND id_enseignant = ?"
@@ -28,7 +27,6 @@ if (!$quiz) {
     die("Quiz introuvable ou accès refusé.");
 }
 
-/* Load categories */
 $stmt = $DB->prepare(
     "SELECT id_categories, Nom_categorie
      FROM categories
@@ -38,7 +36,6 @@ $stmt->bind_param("i", $teacher_id);
 $stmt->execute();
 $categories = $stmt->get_result();
 
-/* Load questions */
 $stmt = $DB->prepare(
     "SELECT * FROM questions
      WHERE id_quiz = ?
@@ -48,7 +45,6 @@ $stmt->bind_param("i", $quiz_id);
 $stmt->execute();
 $questionsDB = $stmt->get_result();
 
-/* Handle POST */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $titre = trim($_POST['quizTitle'] ?? '');
@@ -57,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($titre !== '' && $category_id > 0) {
 
-        // Update quiz
         $stmt = $DB->prepare(
             "UPDATE quiz
              SET titre_quiz = ?, description = ?, id_categories = ?
@@ -73,12 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $stmt->execute();
 
-        // Delete old questions
         $stmt = $DB->prepare("DELETE FROM questions WHERE id_quiz = ?");
         $stmt->bind_param("i", $quiz_id);
         $stmt->execute();
 
-        // Insert new questions
         $questions = $_POST['question'] ?? [];
         $answers   = $_POST['answer'] ?? [];
 
@@ -118,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="menu-toggle" id="menuToggle">
@@ -135,7 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
     </header>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <nav>
             <ul class="nav-links">
@@ -168,12 +159,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
     </aside>
 
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
                 <h2>Modifier le Quiz</h2>
@@ -185,16 +173,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
         </div>
 
-        <!-- Form Container -->
         <div class="form-container">
-            <!-- Info Alert -->
             <div class="info-alert">
                 <i class="fas fa-info-circle"></i>
                 <p>Modifiez les informations de votre quiz. Les modifications seront immédiatement appliquées.</p>
             </div>
 
             <form id="editQuizForm" method="POST">
-                <!-- Quiz Information Section -->
                 <div class="form-section">
                     <h3>Informations du Quiz</h3>
 
@@ -236,7 +221,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Questions Section -->
                 <div class="form-section">
                     <h3>Questions du quiz</h3>
 
@@ -265,7 +249,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </button>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i>
@@ -283,7 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         let questionCount = 3;
 
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -304,7 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overlay.classList.remove('active');
         });
 
-        // Close sidebar on mobile
         const navLinks = document.querySelectorAll('.nav-links a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -322,14 +303,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Logout
         function handleLogout() {
             if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                 window.location.href = 'logout.php';
             }
         }
 
-        // Add question
         function addQuestion() {
             questionCount++;
             const container = document.getElementById('questionsContainer');
@@ -350,7 +329,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             container.appendChild(div);
         }
 
-        // Delete question
         function deleteQuestion(btn) {
             const container = document.getElementById('questionsContainer');
             const blocks = container.querySelectorAll('.question-block');
@@ -366,7 +344,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Update numbers
         function updateQuestionNumbers() {
             const blocks = document.querySelectorAll('.question-block');
             questionCount = blocks.length;
@@ -377,7 +354,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-        // Cancel
         function handleCancel() {
             if (confirm('Annuler les modifications ? Toutes les modifications non enregistrées seront perdues.')) {
                 window.location.href = 'quizes.php';

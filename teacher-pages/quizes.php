@@ -9,7 +9,6 @@ if (!isset($_SESSION['teacher_id'])) {
 
 $teacher_id = (int) $_SESSION['teacher_id'];
 
-// Fetch quizzes of this teacher
 $stmt = $DB->prepare("
     SELECT 
         q.id_quiz,
@@ -39,7 +38,6 @@ $quizzes = $stmt->get_result();
 </head>
 <body>
 
-<!-- Header -->
 <header class="header">
     <div class="header-left">
         <button class="menu-toggle" id="menuToggle">
@@ -57,7 +55,6 @@ $quizzes = $stmt->get_result();
     </a>
 </header>
 
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
     <nav>
         <ul class="nav-links">
@@ -89,13 +86,10 @@ $quizzes = $stmt->get_result();
     </nav>
 </aside>
 
-<!-- Overlay for mobile -->
 <div class="overlay" id="overlay"></div>
 
-<!-- Main Content -->
 <main class="main-content" id="mainContent">
 
-    <!-- Page Header -->
     <div class="page-header">
         <div class="page-title-section">
             <h2>Gestion des Quiz</h2>
@@ -107,7 +101,6 @@ $quizzes = $stmt->get_result();
         </a>
     </div>
 
-    <!-- Quiz Container -->
     <div class="quiz-container">
 
         <?php if ($quizzes->num_rows > 0): ?>
@@ -174,7 +167,6 @@ $quizzes = $stmt->get_result();
 
 
     <script>
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -195,7 +187,6 @@ $quizzes = $stmt->get_result();
             overlay.classList.remove('active');
         });
 
-        // Close sidebar when clicking a link on mobile
         const navLinks = document.querySelectorAll('.nav-links a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -206,7 +197,6 @@ $quizzes = $stmt->get_result();
             });
         });
 
-        // Handle window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 overlay.classList.remove('active');
@@ -214,7 +204,6 @@ $quizzes = $stmt->get_result();
             }
         });
 
-        // Logout function
         function handleLogout() {
             if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                 window.location.href = 'logout.php';

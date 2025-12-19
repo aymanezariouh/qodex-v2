@@ -8,10 +8,6 @@ if (!isset($_SESSION['teacher_id'])) {
 }
 
 $error = null;
-
-/* =========================
-   LOAD CATEGORIES (GET)
-========================= */
 $stmt = $DB->prepare(
     "SELECT id_categories, Nom_categorie
      FROM categories
@@ -20,10 +16,6 @@ $stmt = $DB->prepare(
 $stmt->bind_param("i", $_SESSION['teacher_id']);
 $stmt->execute();
 $categories = $stmt->get_result();
-
-/* =========================
-   HANDLE FORM SUBMIT (POST)
-========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $titre        = trim($_POST['quizTitle'] ?? '');
@@ -33,12 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $questions    = $_POST['question'] ?? [];
     $answers      = $_POST['answer'] ?? [];
 
-    /* ---- BASIC VALIDATION ---- */
     if ($titre === '' || $category_id === 0) {
         $error = "Titre et catégorie obligatoires.";
     }
 
-    /* ---- CATEGORY OWNERSHIP ---- */
     if (!$error) {
         $checkCat = $DB->prepare(
             "SELECT id_categories
@@ -53,9 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    /* ---- INSERT QUIZ ---- */
     if (!$error) {
-        // 1️⃣ Insert quiz (MATCHES YOUR DB STRUCTURE)
         $stmt = $DB->prepare(
             "INSERT INTO quiz (titre_quiz, description, id_categories, id_enseignant)
      VALUES (?, ?, ?, ?)"
@@ -92,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $validQuestions++;
 
-                // REQUIRED defaults (because DB says NOT NULL)
                 $points = 1;
                 $option1 = null;
                 $option2 = null;
@@ -127,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    /* ---- SUCCESS ---- */
     if (!$error) {
         header("Location: quizes.php");
         exit;
@@ -195,12 +181,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
     </aside>
 
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
                 <h2>Créer un Quiz</h2>
@@ -212,10 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
         </div>
 
-        <!-- Form Container -->
         <div class="form-container">
             <form id="createQuizForm" method="POST" action="create_quiz.php">
-                <!-- Quiz Information Section -->
                 <div class="form-section">
                     <h3>Informations du Quiz</h3>
 
@@ -259,12 +240,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Questions Section -->
                 <div class="form-section">
                     <h3>Questions du quiz</h3>
 
                     <div class="questions-container" id="questionsContainer">
-                        <!-- Initial Question Block -->
                         <div class="question-block">
                             <div class="question-header">
                                 <span class="question-number">Question 1</span>
@@ -293,7 +272,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </button>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-check-circle"></i>
@@ -311,7 +289,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         let questionCount = 1;
 
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -332,7 +309,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overlay.classList.remove('active');
         });
 
-        // Close sidebar when clicking a link on mobile
         const navLinks = document.querySelectorAll('.nav-links a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -343,7 +319,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
 
-        // Handle window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 overlay.classList.remove('active');
@@ -351,14 +326,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Logout function
         function handleLogout() {
             if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                 window.location.href = 'logout.php';
             }
         }
 
-        // Add new question
         function addQuestion() {
             questionCount++;
             const questionsContainer = document.getElementById('questionsContainer');
@@ -391,12 +364,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             questionsContainer.appendChild(questionBlock);
         }
 
-        // Delete question
         function deleteQuestion(btn) {
             const questionsContainer = document.getElementById('questionsContainer');
             const questionBlocks = questionsContainer.querySelectorAll('.question-block');
 
-            // Don't allow deleting if only one question remains
             if (questionBlocks.length <= 1) {
                 alert('Vous devez avoir au moins une question dans le quiz.');
                 return;
@@ -406,12 +377,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const questionBlock = btn.closest('.question-block');
                 questionBlock.remove();
 
-                // Renumber remaining questions
                 updateQuestionNumbers();
             }
         }
 
-        // Update question numbers after deletion
         function updateQuestionNumbers() {
             const questionBlocks = document.querySelectorAll('.question-block');
             questionCount = questionBlocks.length;
@@ -422,34 +391,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         }
 
-        // Handle form submission
-        // const createQuizForm = document.getElementById('createQuizForm');
-        // createQuizForm.addEventListener('submit', function(e) {
-        //     e.preventDefault();
 
-        //     const quizTitle = document.getElementById('quizTitle').value;
-        //     const quizCategory = document.getElementById('quizCategory').value;
-        //     const questions = document.querySelectorAll('input[name="question[]"]');
 
-        //     if (quizTitle.trim() === '' || quizCategory === '') {
-        //         alert('Veuillez remplir tous les champs obligatoires.');
-        //         return;
-        //     }
 
-        //     if (questions.length === 0) {
-        //         alert('Ajoutez au moins une question au quiz.');
-        //         return;
-        //     }
 
-        //     // Simulate successful creation
-        //     if (confirm(`Créer le quiz "${quizTitle}" avec ${questions.length} question(s) ?`)) {
-        //         alert('Quiz créé avec succès ! (simulation)');
-        //         // In real implementation, this would make an API call
-        //         // window.location.href = 'edit_quiz.php';
-        //     }
-        // });
 
-        // Handle cancel button
         function handleCancel() {
             const quizTitle = document.getElementById('quizTitle').value;
 

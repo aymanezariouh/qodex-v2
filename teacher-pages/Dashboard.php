@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="menu-toggle" id="menuToggle">
@@ -55,10 +54,8 @@
             </ul>
         </nav>
     </aside>
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
         <div class="welcome-container">
             <div class="welcome-icon">

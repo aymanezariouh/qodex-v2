@@ -8,10 +8,6 @@ if (!isset($_SESSION['teacher_id'])) {
 }
 
 $teacher_id = (int) $_SESSION['teacher_id'];
-
-/*
- Fetch results ONLY for quizzes created by this teacher
-*/
 $stmt = $DB->prepare("
     SELECT
         u.Nom AS student_name,
@@ -39,7 +35,6 @@ $results = $stmt->get_result();?>
     <link rel="stylesheet" href="../css/resultats.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="menu-toggle" id="menuToggle">
@@ -56,7 +51,6 @@ $results = $stmt->get_result();?>
         </button>
     </header>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <nav>
             <ul class="nav-links">
@@ -88,17 +82,12 @@ $results = $stmt->get_result();?>
         </nav>
     </aside>
 
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
-
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <h2>Résultats des Étudiants</h2>
         </div>
 
-        <!-- Results Table -->
         <div class="results-container">
             <div class="table-wrapper">
                 <table class="results-table">
@@ -166,7 +155,6 @@ $results = $stmt->get_result();?>
     </main>
 
     <script>
-        // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -187,7 +175,6 @@ $results = $stmt->get_result();?>
             overlay.classList.remove('active');
         });
 
-        // Close sidebar on mobile when clicking links
         const navLinks = document.querySelectorAll('.nav-links a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -198,7 +185,6 @@ $results = $stmt->get_result();?>
             });
         });
 
-        // Handle window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 overlay.classList.remove('active');
@@ -206,7 +192,6 @@ $results = $stmt->get_result();?>
             }
         });
 
-        // Logout function
         function handleLogout() {
             if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                 window.location.href = 'logout.php';

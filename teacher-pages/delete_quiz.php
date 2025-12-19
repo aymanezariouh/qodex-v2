@@ -15,7 +15,6 @@ if ($quiz_id <= 0) {
     exit;
 }
 
-/* 🔒 Verify quiz belongs to this teacher */
 $stmt = $DB->prepare(
     "SELECT id_quiz 
      FROM quiz 
@@ -28,11 +27,9 @@ if ($stmt->get_result()->num_rows === 0) {
     die("Access denied.");
 }
 
-/* ❌ Delete quiz (questions auto-delete if FK exists) */
 $stmt = $DB->prepare("DELETE FROM quiz WHERE id_quiz = ?");
 $stmt->bind_param("i", $quiz_id);
 $stmt->execute();
 
-/* ✅ Redirect back */
 header("Location: quizes.php?deleted=1");
 exit;

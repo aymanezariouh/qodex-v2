@@ -36,7 +36,6 @@ $sql->execute();
 </head>
 
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-left">
             <button class="menu-toggle" id="menuToggle">
@@ -53,7 +52,6 @@ $sql->execute();
         </button>
     </header>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <nav>
             <ul class="nav-links">
@@ -86,12 +84,9 @@ $sql->execute();
         </nav>
     </aside>
 
-    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Page Header -->
         <div class="page-header">
             <div class="page-title-section">
                 <h2>Nouvelle Catégorie</h2>
@@ -103,17 +98,13 @@ $sql->execute();
             </a>
         </div>
 
-        <!-- Form Container -->
         <div class="form-container">
-            <!-- Success Message (hidden by default) -->
             <div class="success-message" id="successMessage">
                 <i class="fas fa-check-circle"></i>
                 <p>Catégorie créée avec succès !</p>
             </div>
 
-            <!-- Create Form -->
             <form id="createCategoryForm" method="post" name="creat">
-                <!-- Category Name -->
                 <div class="form-group">
                     <label for="categoryName">
                         Nom de la catégorie <span style="color: #dc3545;">*</span>
@@ -127,7 +118,6 @@ $sql->execute();
                     <small>Choisissez un nom unique et descriptif</small>
                 </div>
 
-                <!-- Category Description -->
                 <div class="form-group">
                     <label for="categoryDescription">
                         Description
@@ -139,7 +129,6 @@ $sql->execute();
                     <small>Optionnel - Une description aide les étudiants à comprendre le contenu</small>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-plus-circle"></i>
