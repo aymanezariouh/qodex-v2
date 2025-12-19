@@ -1,30 +1,42 @@
 <?php
 session_start();
-
-require_once 'C:\Users\LENOVO\Desktop\quiz-app\includes\database.php';
+require_once __DIR__ . '/../includes/database.php';
 require_once __DIR__ . '/../includes/functiones.php';
 
+// DELETE category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
-/* create category */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = $_POST['Nom_categorie'];
-    $description = $_POST['description'];
+    $category_id = (int) $_POST['delete_id'];
 
-    $stmt = $DB->prepare(
-        "INSERT INTO categories (Nom_categorie, description)
-        VALUES (?, ?)"
-    );
-    $stmt->bind_param("ss", $nom, $description);
+    $stmt = $DB->prepare("DELETE FROM categories WHERE id_categories = ?");
+    $stmt->bind_param("i", $category_id);
     $stmt->execute();
 
     header("Location: create_category.php");
     exit;
 }
 
-/* fetch categories (if you list them) */
-$categories = get_categories();
+// CREATE category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Nom_categorie'], $_POST['description'])) {
 
+    $nom = trim($_POST['Nom_categorie']);
+    $description = trim($_POST['description']);
+
+    $stmt = $DB->prepare(
+        "INSERT INTO categories (Nom_categorie, description, teacher_id)
+         VALUES (?, ?, ?)"
+    );
+    $stmt->bind_param("ssi", $nom, $description, $_SESSION['id_enseignant']);
+    $stmt->execute();
+
+    header("Location: create_category.php");
+    exit;
+}
+
+// FETCH categories
+$categories = get_categories();
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -119,8 +131,10 @@ $categories = get_categories();
 
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form method="POST" action="delete.php" style="display:inline;">
-                            <input type="hidden" name="id" value="<?= $categ['id_categories'] ?>">
+                        <form method="POST" action="" style="display:inline;">
+                            <input type="hidden" name="delete_id" value="<?= $categ['id_categories'] ?>">
+
+                            
                             <button type="submit" class="action-btn delete" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
